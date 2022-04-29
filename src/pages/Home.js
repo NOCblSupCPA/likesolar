@@ -1,16 +1,26 @@
-import React from 'react';
-import { ImageBackground, View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import React, {useState} from 'react';
+import { ImageBackground, 
+          View,
+          Text, 
+          Image, 
+          StyleSheet, 
+          Button, 
+          TouchableOpacity, 
+          Platform, 
+          PermissionsAndroid,
+          SafeAreaView} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import{ScrollView, TextInput,} from 'react-native-gesture-handler';
 import {Feather, FontAwesome5, Ionicons} from '@expo/vector-icons';
 import {useForm, Controller} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-
+import {reactNativeHtmlToPdf} from 'react-native-html-to-pdf';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
 const schema = yup.object({
-    consumo: yup.string("a").required("Campo Obrigatório"),
-    preco: yup.string("b"). required("Campo Obrigatório"),
-    padrao: yup.string("c").required("Campo Obrigatório"),
+    consumo: yup.string("a").required("Preencha os Dados"),
+    preco: yup.string("b"). required("Preencha os Dados"),
+    padrao: yup.string("c").required("Preencha os Dados"),
 })
 
 export default function Home() {
@@ -19,12 +29,49 @@ export default function Home() {
     const{control, handleSubmit, formState:{errors}} = useForm({
         resolver: yupResolver(schema),
     });
+    // function SignIn(data){
 
-    function SignIn(data){
-        // console.log(data.consumo);
-        // console.log(data.preco);
-        // console.log(data.padrao);
+    // };
+
+    const [filePath, setFilePath] = useState('');
+   
+    const isPermitted = async () => {
+      if (Platform.OS === 'android') {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            {
+              title: 'External Storage Write Permission',
+              message: 'App needs access to Storage data',
+            },
+          );
+          return granted === PermissionsAndroid.RESULTS.GRANTED;
+        } catch (err) {
+          alert('Write permission err', err);
+          return false;
+        }
+      } else {
+        return true;
+      }
     };
+   
+    const createPDF = async () => {
+      if (await isPermitted()) {
+        let options = {
+          //Content to print
+          html:
+            '<h1 style="text-align: center;"><strong>Hello Guys</strong></h1><p style="text-align: center;">Here is an example of pdf Print in React Native</p><p style="text-align: center;"><strong>Team About React</strong></p>',
+          //File Name
+          fileName: 'test',
+          //File directory
+          directory: 'docs',
+        };
+        let file = await RNHTMLtoPDF.convert(options);
+        console.log(file.filePath);
+        setFilePath(file.filePath);
+      }
+    };
+
  return (
     <View style={{flex:1, backgroundColor:'#333'}}>
             <Image  style={styles.imagem} source={require('../assets/likesolar.png')}/> 
@@ -39,8 +86,8 @@ export default function Home() {
                     style={[
                         styles.input,{
                             borderWidth: errors.consumo && 1,
-                            borderColor: errors.consumo && '#ff375b'
-                    }]} 
+                            borderColor: errors.consumo && '#ff0000'
+                          }]} 
                     onChangeText={onChange}
                     onBlur={onBlur}
                     valule={value} //chamado quando o text é tocado
@@ -51,7 +98,7 @@ export default function Home() {
                 />
                 {errors.consumo && <Text style={styles.alert}>{errors.consumo?.message}</Text>}
 
-                <Text style={styles.texto}>Preço do kWh</Text>
+                <Text style={styles.texto}>Preço do kW/h</Text>
                 <Controller
                 control={control}
                 name="preco"
@@ -60,7 +107,7 @@ export default function Home() {
                     style={[
                         styles.input,{
                             borderWidth: errors.preco && 1,
-                            borderColor: errors.preco && '#ff375b'
+                            borderColor: errors.preco && '#ff0000'
                     }]} 
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -81,7 +128,7 @@ export default function Home() {
                     style={[
                         styles.input,{
                             borderWidth: errors.padrao && 1,
-                            borderColor: errors.padrao && '#ff375b'
+                            borderColor: errors.padrao && '#ff0000'
                     }]}  
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -91,11 +138,12 @@ export default function Home() {
                 )}
                 />     
                 {errors.padrao && <Text style={styles.alert}>{errors.padrao?.message}</Text>}
-                <TouchableOpacity style={styles.botao} onPress={handleSubmit(SignIn)}>
+                <TouchableOpacity style={styles.botao} onPress={handleSubmit(createPDF)}>
                     <Text style={styles.botsend}>ENVIAR FORMULÁRIO</Text>
                 </TouchableOpacity>
             </View>
     </View>
+    
   );
 }
 const styles = StyleSheet.create({
@@ -126,7 +174,7 @@ const styles = StyleSheet.create({
       alert:{
         marginLeft:10,
         alignSelf:'flex-start',
-        color:'#ff375b',
+        color:'#ff0000',
         marginBottom:8,
       },
       botao:{
@@ -136,7 +184,7 @@ const styles = StyleSheet.create({
         marginTop:20,
         justifyContent:'center',
         alignItems:'center',
-        backgroundColor:'#62AE47',
+        backgroundColor:'#FFF',
       },
       botsend:{
         justifyContent:'center',
