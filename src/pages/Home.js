@@ -6,17 +6,22 @@ import { ImageBackground,
           StyleSheet, 
           Button, 
           TouchableOpacity, 
+          TouchableWithoutFeedback,
+          // KeyboardAvoidingView,
           Platform, 
           PermissionsAndroid,
-          SafeAreaView} from 'react-native';
+          SafeAreaView,
+          Keyboard} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import{ScrollView, TextInput,} from 'react-native-gesture-handler';
-import {Feather, FontAwesome5, Ionicons} from '@expo/vector-icons';
 import {useForm, Controller} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {reactNativeHtmlToPdf} from 'react-native-html-to-pdf';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import { KeyboardAvoidingView } from 'react-native-web';
+import {TextInputMask} from 'react-native-masked-text'
+ 
 const schema = yup.object({
     consumo: yup.string("a").required("Preencha os Dados"),
     preco: yup.string("b"). required("Preencha os Dados"),
@@ -29,55 +34,58 @@ export default function Home() {
     const{control, handleSubmit, formState:{errors}} = useForm({
         resolver: yupResolver(schema),
     });
-    // function SignIn(data){
+    function SignIn(data){
+      console.log(data);
+      alert('Formulário enviado com Sucesso!!');
 
+    };
+
+    // const [filePath, setFilePath] = useState('');
+   
+    // const isPermitted = async () => {
+    //   if (Platform.OS === 'android') {
+    //     try {
+    //       const granted = await PermissionsAndroid.request(
+    //         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+    //         {
+    //           title: 'External Storage Write Permission',
+    //           message: 'App needs access to Storage data',
+    //         },
+    //       );
+    //       return granted === PermissionsAndroid.RESULTS.GRANTED;
+    //     } catch (err) {
+    //       alert('Write permission err', err);
+    //       return false;
+    //     }
+    //   } else {
+    //     return true;
+    //   }
+    // };
+   
+    // const createPDF = async () => {
+    //   if (await isPermitted()) {
+    //     let options = {
+    //       //Content to print
+    //       html:
+    //         '<h1 style="text-align: center;"><strong>Hello Guys</strong></h1><p style="text-align: center;">Here is an example of pdf Print in React Native</p><p style="text-align: center;"><strong>Team About React</strong></p>',
+    //       //File Name
+    //       fileName: 'test',
+    //       //File directory
+    //       directory: 'docs',
+    //     };
+    //     let file = await RNHTMLtoPDF.convert(options);
+    //     console.log(file.filePath);
+    //     setFilePath(file.filePath);
+    //   }
     // };
 
-    const [filePath, setFilePath] = useState('');
-   
-    const isPermitted = async () => {
-      if (Platform.OS === 'android') {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-            {
-              title: 'External Storage Write Permission',
-              message: 'App needs access to Storage data',
-            },
-          );
-          return granted === PermissionsAndroid.RESULTS.GRANTED;
-        } catch (err) {
-          alert('Write permission err', err);
-          return false;
-        }
-      } else {
-        return true;
-      }
-    };
-   
-    const createPDF = async () => {
-      if (await isPermitted()) {
-        let options = {
-          //Content to print
-          html:
-            '<h1 style="text-align: center;"><strong>Hello Guys</strong></h1><p style="text-align: center;">Here is an example of pdf Print in React Native</p><p style="text-align: center;"><strong>Team About React</strong></p>',
-          //File Name
-          fileName: 'test',
-          //File directory
-          directory: 'docs',
-        };
-        let file = await RNHTMLtoPDF.convert(options);
-        console.log(file.filePath);
-        setFilePath(file.filePath);
-      }
-    };
-
  return (
-    <View style={{flex:1, backgroundColor:'#333'}}>
-            <Image  style={styles.imagem} source={require('../assets/likesolar.png')}/> 
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={{flex:1, backgroundColor:'#333'}}>
+            <Image  style={styles.imagem} source={require('../assets/likesolar.png')}/>
             <View style={styles.container}>
-
                 <Text style={styles.texto}>Média mensal de consumo</Text>
+
                 <Controller
                 control={control}
                 name="consumo"
@@ -90,7 +98,7 @@ export default function Home() {
                           }]} 
                     onChangeText={onChange}
                     onBlur={onBlur}
-                    valule={value} //chamado quando o text é tocado
+                    value={value} //chamado quando o text é tocado
                     placeholder='(kW/h)'
                     keyboardType='numeric'
                     />
@@ -111,7 +119,7 @@ export default function Home() {
                     }]} 
                     onChangeText={onChange}
                     onBlur={onBlur}
-                    valule={value} //chamado quando o text é tocado
+                    value={value} //chamado quando o text é tocado
                     placeholder='R$'
                     keyboardType='numeric'
                     />
@@ -132,17 +140,18 @@ export default function Home() {
                     }]}  
                     onChangeText={onChange}
                     onBlur={onBlur}
-                    valule={value} //chamado quando o text é tocado
+                    value={value} //chamado quando o text é tocado
                     placeholder ='Monofásico, Bifásico, Trifásico'
                     />
                 )}
-                />     
+                />    
                 {errors.padrao && <Text style={styles.alert}>{errors.padrao?.message}</Text>}
-                <TouchableOpacity style={styles.botao} onPress={handleSubmit(createPDF)}>
+                <TouchableOpacity style={styles.botao} onPress={handleSubmit(SignIn)}>
                     <Text style={styles.botsend}>ENVIAR FORMULÁRIO</Text>
                 </TouchableOpacity>
-            </View>
-    </View>
+            </View>     
+      </View>
+    </TouchableWithoutFeedback>
     
   );
 }
