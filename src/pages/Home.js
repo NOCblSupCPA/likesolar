@@ -1,203 +1,244 @@
-import React, {useState} from 'react';
-import { ImageBackground, 
-          View,
-          Text, 
-          Image, 
-          StyleSheet, 
-          Button, 
-          TouchableOpacity, 
-          TouchableWithoutFeedback,
-          // KeyboardAvoidingView,
-          Platform, 
-          PermissionsAndroid,
-          SafeAreaView,
-          Keyboard} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import{ScrollView, TextInput,} from 'react-native-gesture-handler';
-import {useForm, Controller} from 'react-hook-form';
-import {yupResolver} from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import {reactNativeHtmlToPdf} from 'react-native-html-to-pdf';
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
-import { KeyboardAvoidingView } from 'react-native-web';
-import {TextInputMask} from 'react-native-masked-text'
- 
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
+  PermissionsAndroid,
+  Keyboard,
+  Alert,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { ScrollView, TextInput } from "react-native-gesture-handler";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import * as Print from "expo-print";
+import { shareAsync } from "expo-sharing";
+import { Feather } from "@expo/vector-icons";
+import { SimpleLineIcons } from "@expo/vector-icons";
+
 const schema = yup.object({
-    consumo: yup.string("a").required("Preencha os Dados"),
-    preco: yup.string("b"). required("Preencha os Dados"),
-    padrao: yup.string("c").required("Preencha os Dados"),
-})
+  consumo: yup.number("a").required("Campo Obrigatório"),
+  preco: yup.number("b").required("Campo Obrigatório"),
+  padrao: yup.string("c").required("Campo Obrigatório"),
+});
 
 export default function Home() {
-    const navigation = useNavigation();
+  const [selectedPrinter, setSelectedPrinter] = React.useState();
 
-    const{control, handleSubmit, formState:{errors}} = useForm({
-        resolver: yupResolver(schema),
+  const navigation = useNavigation();
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const printToFile = async (data) => {
+    // On iOS/android prints the given html. On web prints the HTML from the current page.
+    let html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <h1>ORÇAMENTO LIKE SOLAR<h1>
+    </head>
+    <body>
+
+    </body>
+    </html>
+  `;
+    const { uri } = await Print.printToFileAsync({
+      html,
     });
-    function SignIn(data){
-      console.log(data);
-      alert('Formulário enviado com Sucesso!!');
+    console.log("File has been saved to:", uri);
+    await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
+  };
 
-    };
-
-    // const [filePath, setFilePath] = useState('');
-   
-    // const isPermitted = async () => {
-    //   if (Platform.OS === 'android') {
-    //     try {
-    //       const granted = await PermissionsAndroid.request(
-    //         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-    //         {
-    //           title: 'External Storage Write Permission',
-    //           message: 'App needs access to Storage data',
-    //         },
-    //       );
-    //       return granted === PermissionsAndroid.RESULTS.GRANTED;
-    //     } catch (err) {
-    //       alert('Write permission err', err);
-    //       return false;
-    //     }
-    //   } else {
-    //     return true;
-    //   }
-    // };
-   
-    // const createPDF = async () => {
-    //   if (await isPermitted()) {
-    //     let options = {
-    //       //Content to print
-    //       html:
-    //         '<h1 style="text-align: center;"><strong>Hello Guys</strong></h1><p style="text-align: center;">Here is an example of pdf Print in React Native</p><p style="text-align: center;"><strong>Team About React</strong></p>',
-    //       //File Name
-    //       fileName: 'test',
-    //       //File directory
-    //       directory: 'docs',
-    //     };
-    //     let file = await RNHTMLtoPDF.convert(options);
-    //     console.log(file.filePath);
-    //     setFilePath(file.filePath);
-    //   }
-    // };
-
- return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={{flex:1, backgroundColor:'#333'}}>
-            <Image  style={styles.imagem} source={require('../assets/likesolar.png')}/>
-            <View style={styles.container}>
-                <Text style={styles.texto}>Média mensal de consumo</Text>
-
-                <Controller
-                control={control}
-                name="consumo"
-                render={({field:{onChange,onBlur,value}}) =>(
-                    <TextInput 
-                    style={[
-                        styles.input,{
-                            borderWidth: errors.consumo && 1,
-                            borderColor: errors.consumo && '#ff0000'
-                          }]} 
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    value={value} //chamado quando o text é tocado
-                    placeholder='(kW/h)'
-                    keyboardType='numeric'
-                    />
-                )}
-                />
-                {errors.consumo && <Text style={styles.alert}>{errors.consumo?.message}</Text>}
-
-                <Text style={styles.texto}>Preço do kW/h</Text>
-                <Controller
-                control={control}
-                name="preco"
-                render={({field:{onChange,onBlur,value}}) =>(
-                    <TextInput 
-                    style={[
-                        styles.input,{
-                            borderWidth: errors.preco && 1,
-                            borderColor: errors.preco && '#ff0000'
-                    }]} 
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    value={value} //chamado quando o text é tocado
-                    placeholder='R$'
-                    keyboardType='numeric'
-                    />
-                )}
-                />
-                {errors.preco && <Text style={styles.alert}>{errors.preco?.message}</Text>}
-
-                <Text style={styles.texto}>Padrão de Entrada</Text>
-                <Controller
-                control={control}
-                name="padrao"
-                render={({field:{onChange,onBlur,value}}) =>(
-                    <TextInput 
-                    style={[
-                        styles.input,{
-                            borderWidth: errors.padrao && 1,
-                            borderColor: errors.padrao && '#ff0000'
-                    }]}  
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    value={value} //chamado quando o text é tocado
-                    placeholder ='Monofásico, Bifásico, Trifásico'
-                    />
-                )}
-                />    
-                {errors.padrao && <Text style={styles.alert}>{errors.padrao?.message}</Text>}
-                <TouchableOpacity style={styles.botao} onPress={handleSubmit(SignIn)}>
-                    <Text style={styles.botsend}>ENVIAR FORMULÁRIO</Text>
-                </TouchableOpacity>
-            </View>     
-      </View>
-    </TouchableWithoutFeedback>
+  const print = async (data) => {
+    let html = `
+    <!DOCTYPE html>
+    <html>
+    <head style="">
+        <h1>ORÇAMENTO LIKE SOLAR<h1>
+    </head>
+    <body>
     
+    </body>
+    </html>
+  `;
+
+    await Print.printAsync({
+      html,
+      printerUrl: selectedPrinter?.url, // iOS only
+    });
+    console.log(data);
+  };
+
+  return (
+    <KeyboardAvoidingView
+      behavior="padding"
+      style={{ flex: 1, backgroundColor: "#333" }}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={{ flex: 1, backgroundColor: "#333" }}>
+          <Image
+            style={styles.imagem}
+            source={require("../assets/likesolar.png")}
+          />
+          <View style={styles.container}>
+            <Text style={styles.texto}>Média mensal de consumo</Text>
+            <Controller
+              control={control}
+              name="consumo"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      borderWidth: errors.consumo && 1,
+                      borderColor: errors.consumo && "#ff0000",
+                    },
+                  ]}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value} //chamado quando o text é tocado
+                  placeholder="(kW/h)"
+                  keyboardType="numeric"
+                />
+              )}
+            />
+            {errors.consumo && (
+              <Text style={styles.alert}>{errors.consumo?.message}</Text>
+            )}
+
+            <Text style={styles.texto}>Preço do kW/h</Text>
+            <Controller
+              control={control}
+              name="preco"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      borderWidth: errors.preco && 1,
+                      borderColor: errors.preco && "#ff0000",
+                    },
+                  ]}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value} //chamado quando o text é tocado
+                  placeholder="R$"
+                  keyboardType="numeric"
+                />
+              )}
+            />
+            {errors.preco && (
+              <Text style={styles.alert}>{errors.preco?.message}</Text>
+            )}
+
+            <Text style={styles.texto}>Padrão de Entrada</Text>
+            <Controller
+              control={control}
+              name="padrao"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      borderWidth: errors.padrao && 1,
+                      borderColor: errors.padrao && "#ff0000",
+                    },
+                  ]}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  placeholder="Monofásico, Bifásico, Trifásico"
+                />
+              )}
+            />
+            {errors.padrao && (
+              <Text style={styles.alert}>{errors.padrao?.message}</Text>
+            )}
+          </View>
+          <View style={styles.bottons}>
+            <TouchableOpacity
+              style={styles.botao}
+              onPress={handleSubmit(printToFile)}
+            >
+              <Text style={styles.botsend}>ENVIAR</Text>
+              <Feather name="send" size={20} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.botao}
+              onPress={handleSubmit(print)}
+            >
+              <Text style={styles.botsend}>VISUALIZAR</Text>
+              <Feather name="eye" size={20} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding:30,
-        alignItems: 'center',
-      },
-      imagem:{
-        marginTop:50,
-        alignSelf:'center',
-      },
-      input:{
-        padding:10,
-        backgroundColor:'#fff',
-        width:'95%',
-        height:50,
-        borderRadius:6,
-        elevation:10,
-      },
-      texto:{
-        alignSelf:'flex-start',
-        marginLeft:10,
-        fontFamily:'Montserrat_400Regular', 
-        paddingTop:20,
-        color:'#fff'
-      },
-      alert:{
-        marginLeft:10,
-        alignSelf:'flex-start',
-        color:'#ff0000',
-        marginBottom:8,
-      },
-      botao:{
-        width:'95%',
-        height:'10%',
-        borderRadius:9,
-        marginTop:20,
-        justifyContent:'center',
-        alignItems:'center',
-        backgroundColor:'#FFF',
-      },
-      botsend:{
-        justifyContent:'center',
-        fontFamily:'Montserrat_400Regular',
-        fontSize:16,
-      }
+  container: {
+    padding: 10,
+    alignItems: "center",
+  },
+  imagem: {
+    marginTop: 50,
+    alignSelf: "center",
+  },
+  input: {
+    padding: 10,
+    backgroundColor: "#fff",
+    width: "95%",
+    height: 50,
+    borderRadius: 6,
+    elevation: 10,
+    shadowColor: "#f5f5f5",
+  },
+  texto: {
+    alignSelf: "flex-start",
+    marginLeft: 10,
+    fontFamily: "Montserrat_400Regular",
+    paddingTop: 20,
+    color: "#fff",
+  },
+  alert: {
+    marginLeft: 10,
+    alignSelf: "flex-start",
+    color: "#ff0000",
+    marginBottom: 8,
+  },
+  bottons: {
+    flex: 1,
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  botsend: {
+    fontFamily: "Montserrat_400Regular",
+  },
+  botao: {
+    height: "20%",
+    width: "42.4%",
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 10,
+    elevation: 10,
+    shadowColor: "#f5f5f5",
+  },
 });
+
+const estilo = StyleSheet.create({});
