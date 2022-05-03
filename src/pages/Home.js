@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  TextInput,
   KeyboardAvoidingView,
   Platform,
   PermissionsAndroid,
@@ -13,7 +14,7 @@ import {
   Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { ScrollView, TextInput } from "react-native-gesture-handler";
+import { ScrollView } from "react-native-gesture-handler";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -21,10 +22,11 @@ import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
 import { Feather } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
+import { AntDesign } from '@expo/vector-icons'; 
 
 const schema = yup.object({
   consumo: yup.number("a").required("Campo Obrigatório"),
-  preco: yup.number("b").required("Campo Obrigatório"),
+  preco: yup.string("b").required("Campo Obrigatório"),
   padrao: yup.string("c").required("Campo Obrigatório"),
 });
 
@@ -44,15 +46,28 @@ export default function Home() {
   const printToFile = async (data) => {
     // On iOS/android prints the given html. On web prints the HTML from the current page.
     let html = `
-    <!DOCTYPE html>
     <html>
     <head>
-        <h1>ORÇAMENTO LIKE SOLAR<h1>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
     </head>
     <body>
+      <h1 style="text-align: center; font-size: 30px; font-family: Helvetica Neue;">
+        ORÇAMENTO LIKE SOLAR
+      </h1>
+      <h1 style=font-size: 10px;">
+      Consumo Mensal de Consumo (KW/h): ${data.consumo}
+      </h1>
 
+      <h1 style=font-size: 10px; ">
+      Preço do KW/h: ${data.preco}
+      </h1>
+
+      <h1 style=font-size: 10px; ">
+      Padrão de entrada: ${data.padrao}
+      </h1>
+      
     </body>
-    </html>
+  </html>
   `;
     const { uri } = await Print.printToFileAsync({
       html,
@@ -63,15 +78,28 @@ export default function Home() {
 
   const print = async (data) => {
     let html = `
-    <!DOCTYPE html>
     <html>
-    <head style="">
-        <h1>ORÇAMENTO LIKE SOLAR<h1>
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
     </head>
     <body>
-    
+      <h1 style="text-align: center; font-size: 30px; font-family: Helvetica Neue;">
+        ORÇAMENTO LIKE SOLAR
+      </h1>
+      <h1 style=font-size: 10px;">
+      Consumo Mensal de Consumo (KW/h): ${data.consumo}
+      </h1>
+
+      <h1 style=font-size: 10px; ">
+      Preço do KW/h: ${data.preco}
+      </h1>
+
+      <h1 style=font-size: 10px; ">
+      Padrão de entrada: ${data.padrao}
+      </h1>
+      
     </body>
-    </html>
+  </html>
   `;
 
     await Print.printAsync({
@@ -82,12 +110,10 @@ export default function Home() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior="padding"
-      style={{ flex: 1, backgroundColor: "#333" }}
-    >
+    <KeyboardAvoidingView behavior="height" style={{ flex: 1, backgroundColor: "#333" }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={{ flex: 1, backgroundColor: "#333" }}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+        <View>
           <Image
             style={styles.imagem}
             source={require("../assets/likesolar.png")}
@@ -110,7 +136,7 @@ export default function Home() {
                   onBlur={onBlur}
                   value={value} //chamado quando o text é tocado
                   placeholder="(kW/h)"
-                  keyboardType="numeric"
+                  //keyboardType="numeric"
                 />
               )}
             />
@@ -135,7 +161,7 @@ export default function Home() {
                   onBlur={onBlur}
                   value={value} //chamado quando o text é tocado
                   placeholder="R$"
-                  keyboardType="numeric"
+                  //keyboardType="numeric"
                 />
               )}
             />
@@ -172,18 +198,19 @@ export default function Home() {
               style={styles.botao}
               onPress={handleSubmit(printToFile)}
             >
-              <Text style={styles.botsend}>ENVIAR</Text>
-              <Feather name="send" size={20} />
+              {/* <Text style={styles.botsend}>ENVIAR</Text> */}
+              <Feather name="share-2" size={20} />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.botao}
               onPress={handleSubmit(print)}
             >
-              <Text style={styles.botsend}>VISUALIZAR</Text>
-              <Feather name="eye" size={20} />
+              {/* <Text style={styles.botsend}>VISUALIZAR</Text> */}
+              <AntDesign name="pdffile1" size={24} color="black" />
             </TouchableOpacity>
           </View>
         </View>
+        </ScrollView>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
@@ -194,7 +221,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   imagem: {
-    marginTop: 50,
+    margin: 10,
     alignSelf: "center",
   },
   input: {
@@ -220,25 +247,24 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   bottons: {
-    flex: 1,
-    justifyContent: "center",
+    //flex: 1,
+    // justifyContent: "center",
     flexDirection: "row",
+    marginLeft:10
   },
   botsend: {
     fontFamily: "Montserrat_400Regular",
   },
   botao: {
-    height: "20%",
-    width: "42.4%",
+    height: 40,
+    width: "20%",
     backgroundColor: "#FFF",
     borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     margin: 10,
-    elevation: 10,
+    elevation: 5,
     shadowColor: "#f5f5f5",
   },
 });
-
-const estilo = StyleSheet.create({});

@@ -1,19 +1,28 @@
 import React from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
+import { View, 
+  Text, 
+  Button, 
+  StyleSheet, 
+  KeyboardAvoidingView, 
+  TextInput, 
+  Image, 
+  TouchableWithoutFeedback, 
+  Keyboard 
+} from "react-native";
 
 export default function Solar() {
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Solar</Text>
-    </View>
+    <KeyboardAvoidingView behavior="height" style={styles.container}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-    alignItems: "center",
-    justifyContent: "center",
+
   },
+
 });
