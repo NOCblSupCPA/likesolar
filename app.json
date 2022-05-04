@@ -1,10 +1,20 @@
 {
   "expo": {
-    "name": "solar",
-    "slug": "solar",
+    "name": "LIKE SOLAR",
+    "slug": "likesolar",
     "version": "1.0.0",
+    "orientation": "portrait",
+    "icon":"../solar/src/assets/icontest.png",
+    "splash":{
+      "image": "../solar/src/assets/splashteste.png",
+      "resizeMode":"contain",
+      "baackgroundColor": "#fff333"
+    },
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "android": {
+      "package": "com.suporte04.solar"
+    }
   }
 }

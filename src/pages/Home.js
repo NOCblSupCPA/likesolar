@@ -22,7 +22,7 @@ import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
 import { Feather } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
-import { AntDesign } from '@expo/vector-icons'; 
+import { AntDesign } from "@expo/vector-icons";
 
 const schema = yup.object({
   consumo: yup.number("a").required("Campo Obrigatório"),
@@ -72,31 +72,31 @@ export default function Home() {
     const { uri } = await Print.printToFileAsync({
       html,
     });
-    console.log("File has been saved to:", uri);
+    //console.log("File has been saved to:", uri);
+    console.log(data);
     await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
   };
 
   const print = async (data) => {
     let html = `
     <html>
-    <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-    </head>
+
     <body>
       <h1 style="text-align: center; font-size: 30px; font-family: Helvetica Neue;">
         ORÇAMENTO LIKE SOLAR
       </h1>
-      <h1 style=font-size: 10px;">
+      <h3>_________________________________________________________________________</h3>
+      <p style="font-size: 25px;">
       Consumo Mensal de Consumo (KW/h): ${data.consumo}
-      </h1>
+      </p>
 
-      <h1 style=font-size: 10px; ">
+      <p style="font-size: 25px;">
       Preço do KW/h: ${data.preco}
-      </h1>
+      </p>
 
-      <h1 style=font-size: 10px; ">
+      <p style="font-size: 25px;">
       Padrão de entrada: ${data.padrao}
-      </h1>
+      </p>
       
     </body>
   </html>
@@ -110,106 +110,109 @@ export default function Home() {
   };
 
   return (
-    <KeyboardAvoidingView behavior="height" style={{ flex: 1, backgroundColor: "#333" }}>
+    <KeyboardAvoidingView
+      behavior="height"
+      style={{ flex: 1, backgroundColor: "#333" }}
+    >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView showsVerticalScrollIndicator={false}>
-        <View>
-          <Image
-            style={styles.imagem}
-            source={require("../assets/likesolar.png")}
-          />
-          <View style={styles.container}>
-            <Text style={styles.texto}>Média mensal de consumo</Text>
-            <Controller
-              control={control}
-              name="consumo"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  style={[
-                    styles.input,
-                    {
-                      borderWidth: errors.consumo && 1,
-                      borderColor: errors.consumo && "#ff0000",
-                    },
-                  ]}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  value={value} //chamado quando o text é tocado
-                  placeholder="(kW/h)"
-                  //keyboardType="numeric"
-                />
-              )}
+          <View>
+            <Image
+              style={styles.imagem}
+              source={require("../assets/likesolar.png")}
             />
-            {errors.consumo && (
-              <Text style={styles.alert}>{errors.consumo?.message}</Text>
-            )}
+            <View style={styles.container}>
+              <Text style={styles.texto}>Média mensal de consumo</Text>
+              <Controller
+                control={control}
+                name="consumo"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={[
+                      styles.input,
+                      {
+                        borderWidth: errors.consumo && 1,
+                        borderColor: errors.consumo && "#ff0000",
+                      },
+                    ]}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value} //chamado quando o text é tocado
+                    placeholder="(kW/h)"
+                    keyboardType="numeric"
+                  />
+                )}
+              />
+              {errors.consumo && (
+                <Text style={styles.alert}>{errors.consumo?.message}</Text>
+              )}
 
-            <Text style={styles.texto}>Preço do kW/h</Text>
-            <Controller
-              control={control}
-              name="preco"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  style={[
-                    styles.input,
-                    {
-                      borderWidth: errors.preco && 1,
-                      borderColor: errors.preco && "#ff0000",
-                    },
-                  ]}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  value={value} //chamado quando o text é tocado
-                  placeholder="R$"
-                  //keyboardType="numeric"
-                />
+              <Text style={styles.texto}>Preço do kW/h</Text>
+              <Controller
+                control={control}
+                name="preco"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={[
+                      styles.input,
+                      {
+                        borderWidth: errors.preco && 1,
+                        borderColor: errors.preco && "#ff0000",
+                      },
+                    ]}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value} //chamado quando o text é tocado
+                    placeholder="R$"
+                    keyboardType="numeric"
+                  />
+                )}
+              />
+              {errors.preco && (
+                <Text style={styles.alert}>{errors.preco?.message}</Text>
               )}
-            />
-            {errors.preco && (
-              <Text style={styles.alert}>{errors.preco?.message}</Text>
-            )}
 
-            <Text style={styles.texto}>Padrão de Entrada</Text>
-            <Controller
-              control={control}
-              name="padrao"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  style={[
-                    styles.input,
-                    {
-                      borderWidth: errors.padrao && 1,
-                      borderColor: errors.padrao && "#ff0000",
-                    },
-                  ]}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  value={value}
-                  placeholder="Monofásico, Bifásico, Trifásico"
-                />
+              <Text style={styles.texto}>Padrão de Entrada</Text>
+              <Controller
+                control={control}
+                name="padrao"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={[
+                      styles.input,
+                      {
+                        borderWidth: errors.padrao && 1,
+                        borderColor: errors.padrao && "#ff0000",
+                      },
+                    ]}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    placeholder="Monofásico, Bifásico, Trifásico"
+                  />
+                )}
+              />
+              {errors.padrao && (
+                <Text style={styles.alert}>{errors.padrao?.message}</Text>
               )}
-            />
-            {errors.padrao && (
-              <Text style={styles.alert}>{errors.padrao?.message}</Text>
-            )}
+            </View>
+            <View style={styles.bottons}>
+              <TouchableOpacity
+                style={styles.botao}
+                onPress={handleSubmit(printToFile)}
+              >
+                {/* <Text style={styles.botsend}>ENVIAR</Text> */}
+                <Feather name="share-2" size={20} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.botao}
+                onPress={handleSubmit(print)}
+              >
+                {/* <Text style={styles.botsend}>VISUALIZAR</Text> */}
+                <AntDesign name="pdffile1" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={styles.bottons}>
-            <TouchableOpacity
-              style={styles.botao}
-              onPress={handleSubmit(printToFile)}
-            >
-              {/* <Text style={styles.botsend}>ENVIAR</Text> */}
-              <Feather name="share-2" size={20} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.botao}
-              onPress={handleSubmit(print)}
-            >
-              {/* <Text style={styles.botsend}>VISUALIZAR</Text> */}
-              <AntDesign name="pdffile1" size={24} color="black" />
-            </TouchableOpacity>
-          </View>
-        </View>
         </ScrollView>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -250,7 +253,7 @@ const styles = StyleSheet.create({
     //flex: 1,
     // justifyContent: "center",
     flexDirection: "row",
-    marginLeft:10
+    marginLeft: 10,
   },
   botsend: {
     fontFamily: "Montserrat_400Regular",
