@@ -6,9 +6,9 @@
     "orientation": "portrait",
     "icon":"../solar/src/assets/icontest.png",
     "splash":{
-      "image": "../solar/src/assets/splashteste.png",
-      "resizeMode":"contain",
-      "baackgroundColor": "#fff333"
+      "image": "../solar/src/assets/bl.png",
+      "resizeMode":"cover",
+      "baackgroundColor": "#000000"
     },
     "assetBundlePatterns": [
       "**/*"

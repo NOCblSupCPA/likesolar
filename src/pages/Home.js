@@ -23,11 +23,18 @@ import { shareAsync } from "expo-sharing";
 import { Feather } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
+import CheckBox from "react-native-check-box";
 
-const schema = yup.object({
-  consumo: yup.number("a").required("Campo Obrigatório"),
-  preco: yup.string("b").required("Campo Obrigatório"),
-  padrao: yup.string("c").required("Campo Obrigatório"),
+export const schema = yup.object({
+  // consumo: yup.number("a").required("Campo Obrigatório"),
+  // preco: yup.string("b").required("Campo Obrigatório"),
+  // padrao: yup.string("c").required("Campo Obrigatório"),
+  disjuntor: yup.string("a").required("Campo Obrigatório!"),
+  aterramento: yup.bool("b"),
+  distanciapadrao: yup.string("c").required("Campo Obrigatório"),
+  qtdcabos: yup.string("d").required("Campo Obrigatório!"),
+  complementos: yup.bool("e"),
+  comp_prot: yup.bool("f"),
 });
 
 export default function Home() {
@@ -117,84 +124,89 @@ export default function Home() {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <View>
-            <Image
+            {/* <Image
               style={styles.imagem}
               source={require("../assets/likesolar.png")}
-            />
+            /> */}
             <View style={styles.container}>
-              <Text style={styles.texto}>Média mensal de consumo</Text>
+              <Text style={styles.texto}>Padrão Geral</Text>
               <Controller
                 control={control}
-                name="consumo"
+                name="disjuntor"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
                     style={[
                       styles.input,
                       {
-                        borderWidth: errors.consumo && 1,
-                        borderColor: errors.consumo && "#ff0000",
+                        borderWidth: errors.disjuntor && 1,
+                        borderColor: errors.disjuntor && "#ff0000",
                       },
                     ]}
                     onChangeText={onChange}
                     onBlur={onBlur}
                     value={value} //chamado quando o text é tocado
-                    placeholder="(kW/h)"
+                    placeholder="(A)"
                     keyboardType="numeric"
                   />
                 )}
               />
-              {errors.consumo && (
-                <Text style={styles.alert}>{errors.consumo?.message}</Text>
+              {errors.disjuntor && (
+                <Text style={styles.alert}>{errors.disjuntor?.message}</Text>
               )}
 
-              <Text style={styles.texto}>Preço do kW/h</Text>
+              <Text style={styles.texto}>Distancia Padrão CEMIG</Text>
               <Controller
                 control={control}
-                name="preco"
+                name="distanciapadrao"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
                     style={[
                       styles.input,
                       {
-                        borderWidth: errors.preco && 1,
-                        borderColor: errors.preco && "#ff0000",
+                        borderWidth: errors.distanciapadrao && 1,
+                        borderColor: errors.distanciapadrao && "#ff0000",
                       },
                     ]}
                     onChangeText={onChange}
                     onBlur={onBlur}
                     value={value} //chamado quando o text é tocado
-                    placeholder="R$"
+                    placeholder="(m)"
                     keyboardType="numeric"
                   />
                 )}
               />
-              {errors.preco && (
-                <Text style={styles.alert}>{errors.preco?.message}</Text>
+              {errors.distanciapadrao && (
+                <Text style={styles.alert}>
+                  {errors.distanciapadrao?.message}
+                </Text>
               )}
 
-              <Text style={styles.texto}>Padrão de Entrada</Text>
+              <Text style={styles.texto}>Quantidade de Cabos</Text>
               <Controller
                 control={control}
-                name="padrao"
+                name="qtdcabos"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
                     style={[
                       styles.input,
                       {
-                        borderWidth: errors.padrao && 1,
-                        borderColor: errors.padrao && "#ff0000",
+                        borderWidth: errors.qtdcabos && 1,
+                        borderColor: errors.qtdcabos && "#ff0000",
                       },
                     ]}
                     onChangeText={onChange}
                     onBlur={onBlur}
-                    value={value}
-                    placeholder="Monofásico, Bifásico, Trifásico"
+                    value={value} //chamado quando o text é tocado
+                    placeholder="()"
+                    keyboardType="numeric"
                   />
                 )}
               />
-              {errors.padrao && (
-                <Text style={styles.alert}>{errors.padrao?.message}</Text>
+              {errors.qtdcabos && (
+                <Text style={styles.alert}>{errors.qtdcabos?.message}</Text>
               )}
+
+              
             </View>
             <View style={styles.bottons}>
               <TouchableOpacity
@@ -250,8 +262,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   bottons: {
-    //flex: 1,
-    // justifyContent: "center",
     flexDirection: "row",
     marginLeft: 10,
   },

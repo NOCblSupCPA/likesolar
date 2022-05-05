@@ -7,16 +7,30 @@ import Solar from "./src/pages/Solar";
 import Sobre from "./src/pages/Sobre";
 
 const Stack = createNativeStackNavigator();
-const Drawer = createDrawerNavigator();
+//const Drawer = createDrawerNavigator();
 
 export default function Routes() {
   return (
     <NavigationContainer>
-      <Drawer.Navigator
+      <Stack.Navigator
         initialRouteName="Home"
         screenOptions={{ headerStyle: { backgroundColor: "#fff" } }}
       >
-        <Drawer.Screen
+        <Stack.Screen 
+        name="Home" 
+        component={Home} 
+        options={{
+          title:"ORÇAMENTO",
+          headerTitleStyle:{
+            fontFamily:"Montserrat_700Bold",
+            color:"#333",
+          }
+        }}
+        />
+        <Stack.Screen name="Solar" component={Solar} />
+        <Stack.Screen name="Sobre" component={Sobre} />
+
+        {/* <Drawer.Screen
           name="home"
           component={Home}
           options={{
@@ -51,8 +65,8 @@ export default function Routes() {
               color: "#333",
             },
           }}
-        />
-      </Drawer.Navigator>
+        /> */}
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
